@@ -42,10 +42,9 @@ type alias RecordWithoutConstructorFunction record =
 
 ### tips
 
-  - find & fix your current _usages_ of record `type alias` constructor functions with [elm-review-record-alias-constructor](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/)
+  - find & fix your current _usages_ of record `type alias` constructor functions: [`elm-review` rule `NoRecordAliasConstructor`](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/NoRecordAliasConstructor)
 
-  - at the time of writing this, there's no elm-review rule to auto-insert `RecordWithoutConstructorFunction`.
-    To find possible aliases, try regex searching for `alias .*=.*\n.*\{`
+  - insert `RecordWithoutConstructorFunction`/... where necessary: [`elm-review` rule `NoRecordAliasWithConstructor`](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/NoRecordAliasWithConstructor)
 
 ## why
 
@@ -275,3 +274,32 @@ consider
 ```monospace
 elm install lue-bird/elm-no-record-type-alias-constructor-function
 ```
+
+# fields constructor too verbose?
+
+```elm
+decodeUser =
+    map2 (\name status -> { name = name, status = status })
+        (field "name" string)
+        (field "status" string)
+```
+is rather verbose.
+
+There are languages that introduce extra sugar
+
+```elm
+-- purescript
+decodeUser =
+    map2 (\name status -> { name, status })
+        (field "name" string)
+        (field "status" string)
+
+-- Dhall
+decodeUser =
+    map2 { name, status }
+        (field "name" string)
+        (field "status" string)
+```
+Where especially the latter has problems (see for example the [`succeed`/`constant` are misused section](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/))!
+
+Maybe something crazy using record unions would be neat but... elm will probably be kept simple.
