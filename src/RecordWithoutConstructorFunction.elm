@@ -64,10 +64,9 @@ Automatic record constructor functions come with countless problems:
 
 ### tips
 
-  - find & fix your current _usages_ of record `type alias` constructor functions with [elm-review-record-alias-constructor](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/)
+  - find & fix your current _usages_ of record `type alias` constructor functions: [`elm-review` rule `NoRecordAliasConstructor`](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/NoRecordAliasConstructor)
 
-  - at the time of writing this, there's no elm-review rule to auto-insert `RecordWithoutConstructorFunction`.
-    To find possible aliases, try regex searching for `alias .*=.*\n.*\{`
+  - insert `RecordWithoutConstructorFunction`/... where necessary: [`elm-review` rule `NoRecordAliasWithConstructor`](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/NoRecordAliasWithConstructor)
 
 -}
 type alias RecordWithoutConstructorFunction record =
