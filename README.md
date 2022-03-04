@@ -275,7 +275,7 @@ consider
 elm install lue-bird/elm-no-record-type-alias-constructor-function
 ```
 
-# fields constructor too verbose?
+## fields constructor too verbose?
 
 ```elm
 decodeUser =
