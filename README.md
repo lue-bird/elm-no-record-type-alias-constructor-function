@@ -262,12 +262,13 @@ Again: Why not consistently use this record constructing method?
 
 `RecordWithoutConstructorFunction.elm` can simply be copied to your project.
 
+  - [the `elm-review` rule that adds your `RecordWithoutConstructorFunction`](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-record-alias-constructor/latest/NoRecordAliasWithConstructor) will still work
+
 However, if you want
 
   - no separate `RecordWithoutConstructorFunction`s hanging around
   - a single place for up to date public documentation
   - a common recognizable name
-      - an elm-review rule that adds `RecordWithoutConstructorFunction` (doesn't exist at the time of writing)
   - (additional safety that `RecordWithoutConstructorFunction` will never aliased to a different type)
 
 consider
@@ -289,17 +290,16 @@ There are languages that introduce extra sugar
 
 ```elm
 -- purescript
-decodeUser =
-    map2 (\name status -> { name, status })
-        (field "name" string)
-        (field "status" string)
-
--- Dhall
-decodeUser =
-    map2 { name, status }
-        (field "name" string)
-        (field "status" string)
+map2 (\name status -> { name, status })
+    (field "name" string)
+    (field "status" string)
 ```
-Where especially the latter has problems (see for example the [`succeed`/`constant` are misused section](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/))!
+
+Or syntax that still has problems, see for example the [`succeed`/`constant` are misused section](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/)
+```elm
+map2 { name, status }
+    (field "name" string)
+    (field "status" string)
+```
 
 Maybe something crazy using record unions would be neat but... elm will probably be kept simple.
