@@ -1,5 +1,9 @@
 # changelog
 
+#### 1.0.3
+
+  - changed section "fields constructor too verbose?"
+
 #### 1.0.2
 
   - removed wrong `-- Dhall` comment for `{ a, b }` constructor function syntax
