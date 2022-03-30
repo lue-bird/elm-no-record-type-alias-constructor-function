@@ -269,7 +269,7 @@ However, if you want
   - no separate `RecordWithoutConstructorFunction`s hanging around
   - a single place for up to date public documentation
   - a common recognizable name
-  - (additional safety that `RecordWithoutConstructorFunction` will never aliased to a different type)
+  - safety that `RecordWithoutConstructorFunction` will never be aliased to a different type
 
 consider
 ```monospace
