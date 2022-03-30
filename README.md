@@ -288,18 +288,25 @@ is rather verbose.
 
 There are languages that introduce extra sugar
 
-```elm
--- purescript
-map2 (\name status -> { name, status })
-    (field "name" string)
-    (field "status" string)
-```
 
-Or syntax that still has problems, see for example the [`succeed`/`constant` are misused section](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/)
-```elm
-map2 { name, status }
-    (field "name" string)
-    (field "status" string)
-```
+  - purescript, ...
+    ```elm
+    map2 (\name status -> { name, status })
+        (field "name" string)
+        (field "status" string)
+    ```
 
-Maybe something crazy using record unions would be neat but... elm will probably be kept simple.
+  - syntax with its own problems, for example still encouraging [`succeed`/`constant` misuse](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/)
+    ```elm
+    map2 { name, status }
+        (field "name" string)
+        (field "status" string)
+    ```
+
+  - field addition
+    ```elm
+    succeed {}
+        |> andField "name" string (|+ .name)
+        |> andField "status" string (|+ .status)
+    ```
+    would be neat but... elm will probably remain a simple language
