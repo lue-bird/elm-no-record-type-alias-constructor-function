@@ -1,5 +1,10 @@
 # changelog
 
+#### 1.0.4
+
+  - section "misunderstood as special type syntax" added
+  - `succeed constant` explanation corrected
+
 #### 1.0.3
 
   - changed section "fields constructor too verbose?"
