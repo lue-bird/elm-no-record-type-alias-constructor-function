@@ -186,8 +186,7 @@ and **get rid of the compile-time error**
 
 ### `succeed`/`constant` are misused
 
-I'd consider `succeed`/`constant`/... in record `Decoder`s/`Generator`s/... unidiomatic.
-You don't decode or randomly generate anything there.
+I'd consider `succeed`/`constant`/... with a constant value in record field value `Decoder`s/`Generator`s/... unidiomatic.
 
 ```elm
 projectDecoder : Decoder Project
