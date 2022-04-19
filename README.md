@@ -168,6 +168,22 @@ type alias TypeExpose =
 ```
 and **get rid of the compile-time error**
 
+### misunderstood as special type syntax
+
+[experience report by John Pavlick: LETWW, Part 2: "Regular expressions are quite confusing and difficult to use."](https://dev.to/jmpavlick/regular-expressions-are-quite-confusing-and-difficult-to-use-50l7):
+
+> My prior lack of understanding was due to a mental disconnect between the two true sentences, "all type aliases are constructors" and "all constructors are functions".
+> 
+> You see, most of my application development experience has been in csharp. In csharp, we don't have type aliases or anything like that, but we do have classes. Classes have a type, and types have a type (and the type of a type is a type called Type, obviously). After marinating for over a decade in a type system where type names are "special" and have to be invoked only in certain special-case contexts (with operators like typeof(), or as function signatures) - I couldn't see what was literally right in front of my eyes:
+> Type names, just like everything else in Elm, are Not Special. They're constructors for a value.
+> 
+> And this was obscured for so long, because when I saw
+> 
+> Parser.succeed Point
+>     |= ...
+> 
+> I didn't see "a function (Parser.succeed) taking another function as an argument (Point) and then passing it values collected from a parsing operation" - I saw "Parser.succeed for a Special Type Name".
+
 ### `succeed`/`constant` are misused
 
 I'd consider `succeed`/`constant`/... in record `Decoder`s/`Generator`s/... unidiomatic.
