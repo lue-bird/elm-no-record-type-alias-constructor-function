@@ -1,5 +1,11 @@
 # changelog
 
+#### 1.0.5
+
+  - section "misunderstood as special type syntax"
+    → "misunderstood as special magic constructors"
+      - quote updated, shortened
+
 #### 1.0.4
 
   - section "misunderstood as special type syntax" added
