@@ -172,11 +172,11 @@ and **get rid of the compile-time error**
 
 [experience report by John Pavlick: LETWW, Part 2: "Regular expressions are quite confusing and difficult to use."](https://dev.to/jmpavlick/regular-expressions-are-quite-confusing-and-difficult-to-use-50l7) (read it):
 
-> My prior lack of understanding was due to a mental disconnect between the two true sentences, "\[direct\] record type aliases come with implicit constructors" and "all constructors are functions".
+> My prior lack of understanding was due to a mental disconnect between the two true sentences, "record type aliases come with implicit constructors" and "all constructors are functions"
 > 
 > \[...\] After marinating for over a decade in a type system where type names are "special" and have to be invoked only in certain special-case contexts - I couldn't see \[...\]:
 > 
-> Type names, just like everything else in Elm, are Not Special. They're constructors for a value. 
+> Type names, just like everything else in Elm, are Not Special. They're constructors for a value [= functions].
 
 ### `succeed`/`constant` are misused
 
@@ -185,7 +185,7 @@ I'd consider `succeed`/`constant`/... with a constant value in record field valu
 ```elm
 projectDecoder : Decoder Project
 projectDecoder =
-    map2
+    map3
         (\name scale selected ->
             { name = name
             , scale = scale
@@ -295,27 +295,124 @@ decodeUser =
 ```
 is rather verbose.
 
-There are languages that introduce extra sugar
+There are languages that introduce extra sugar:
+
+### field addition
+
+```elm
+succeed {}
+    |> andField "name" string (|+ .name)
+    |> andField "status" string (|+ .status)
+```
+or
+```elm
+succeed {}
+    |> andField "name" string (|, .name)
+    |> andField "status" string (|, .status)
+```
+
+would be simple and neat. elm dropped this for simplicity.
 
 
-  - purescript, ...
-    ```elm
-    map2 (\name status -> { name, status })
-        (field "name" string)
-        (field "status" string)
-    ```
+### field "punning"
 
-  - syntax with its own problems, for example still encouraging [`succeed`/`constant` misuse](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/)
-    ```elm
-    map2 { name, status }
-        (field "name" string)
-        (field "status" string)
-    ```
+This is present in purescript and other languages
 
-  - field addition
-    ```elm
-    succeed {}
-        |> andField "name" string (|+ .name)
-        |> andField "status" string (|+ .status)
-    ```
-    would be neat but... elm will probably remain a simple language
+```elm
+map2 (\name status -> { name, status })
+    (field "name" string)
+    (field "status" string)
+```
+Jeroen's made a convincing [argument on negative consequences for descriptiveness](https://discourse.elm-lang.org/t/record-creation-shortcut/6136/10) in contexts of functions growing larger.
+
+
+### positional by fields
+
+```elm
+map2 { name, status }
+    (field "name" string)
+    (field "status" string)
+```
+with either
+```elm
+{ x, y } : Int -> Int -> { x : Int, y : Int }
+{ x =, y = } : Int -> Int -> { x : Int, y : Int }
+{ x = _, y = _ } : Int -> Int -> { x : Int, y : Int }
+```
+or
+```elm
+{ \x y } : Int -> Int -> { x : Int, y : Int }
+```
+from a [very old discussion](https://github.com/elm/compiler/issues/73)
+
+It's concise but quite limited in what it can do while not fixing many problems:
+
+- problems with [`succeed`/`constant` misuse](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/) prevail
+  → confusing `{ x, y = 0, z }` syntax necessary
+
+- less intuitive?
+    - recognizing it as a function
+    - unlike punning in other languages
+
+- less explicit than record field punning
+  a.k.a "doesn't scale well" (arguments are taken as they come, can't be combined, ...)
+
+ and still encourages  for example.
+
+### `type alias` positional 1-field records
+
+Explored in ["Safe and explicit records constructors exploration"](https://discourse.elm-lang.org/t/safe-and-explicit-records-constructors-exploration/4823).
+
+```elm
+Point : Int -> Int -> Point to Point : { x : Int } -> { y : Int } -> Point
+```
+
+- problems with "doesn't scale:
+  can't expose extensible, extended indirect" prevail (if not fixed somehow)
+- defined field ordering should explicitly not matter
+  on by-nature-non-positional records
+- could again seem
+  [magical and unintuitive](https://dev.to/jmpavlick/regular-expressions-are-quite-confusing-and-difficult-to-use-50l7)
+
+
+## improve safety
+
+```elm
+Codec.succeed (\x y -> { x = x, y = y })
+    |> Codec.part ( .x, \x -> { x = x })
+        Codec.int
+    |> Codec.part ( .y, \y -> { y = y })
+        Codec.int
+```
+or to always avoid shadowing errors:
+```elm
+Codec.succeed (\p0 p1 -> { x = .x p0, y = .y p1 })
+    |> Codec.part ( .x, \x -> { x = x })
+        Codec.int
+    |> Codec.part ( .y, \y -> { y = y })
+        Codec.int
+```
+
+Making this less verbose with not-necessarily-language-sugared-but-[code-generable](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-missing-record-field-lens/latest/) field stuff:
+
+```elm
+Codec.succeed (\p0 p1 -> { x = .x p0, y = .y p1 })
+    |> Codec.part Record.x Codec.int
+    |> Codec.part Record.y Codec.int
+```
+
+with
+```elm
+import Record exposing (x, y)
+
+x : Part x { x : x } { record_ | x : x }
+x =
+    part
+        { access = .x
+        , named = \x -> { x = x }
+        , alter = \alter r -> { r | x = r.x |> alter }
+        , description = "x"
+        }
+```
+
+I bet ideas like this won't be widely adopted (in packages) because setting up tools alongside might be seen as too much work (for beginners).
