@@ -335,20 +335,17 @@ map2 { name, status }
 ```
 with either
 ```elm
-{ x, y } : Int -> Int -> { x : Int, y : Int }
-{ x =, y = } : Int -> Int -> { x : Int, y : Int }
+{ x, y }         : Int -> Int -> { x : Int, y : Int }
+{ x =, y = }     : Int -> Int -> { x : Int, y : Int }
 { x = _, y = _ } : Int -> Int -> { x : Int, y : Int }
+{ \x y }         : Int -> Int -> { x : Int, y : Int }
 ```
-or
-```elm
-{ \x y } : Int -> Int -> { x : Int, y : Int }
-```
-from a [very old discussion](https://github.com/elm/compiler/issues/73)
+The last one was proposed in a [very old discussion](https://github.com/elm/compiler/issues/73)
 
 It's concise but quite limited in what it can do while not fixing many problems:
 
-- problems with [`succeed`/`constant` misuse](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/) prevail
-  → confusing `{ x, y = 0, z }` syntax necessary
+- problems with [`succeed`/`constant` misuse](https://dark.elm.dmy.fr/packages/lue-bird/elm-no-record-type-alias-constructor-function/latest/) remain
+    - → confusing `{ x, y = 0, z }` syntax necessary
 
 - less intuitive?
     - recognizing it as a function
@@ -357,18 +354,19 @@ It's concise but quite limited in what it can do while not fixing many problems:
 - less explicit than record field punning
   a.k.a "doesn't scale well" (arguments are taken as they come, can't be combined, ...)
 
- and still encourages  for example.
-
 ### `type alias` positional 1-field records
 
 Explored in ["Safe and explicit records constructors exploration"](https://discourse.elm-lang.org/t/safe-and-explicit-records-constructors-exploration/4823).
 
+Instead of
 ```elm
-Point : Int -> Int -> Point to Point : { x : Int } -> { y : Int } -> Point
+Point : Int -> Int -> Point
+
+Point : { x : Int } -> { y : Int } -> Point
 ```
 
 - problems with "doesn't scale:
-  can't expose extensible, extended indirect" prevail (if not fixed somehow)
+  can't expose extensible, extended indirect" remain (if not fixed somehow)
 - defined field ordering should explicitly not matter
   on by-nature-non-positional records
 - could again seem
