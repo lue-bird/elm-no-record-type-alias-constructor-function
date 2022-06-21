@@ -1,5 +1,9 @@
 # change log
 
+#### 1.0.7
+
+  - section "verbose" format corrected
+
 #### 1.0.6
 
   - section "verbose" details and other concepts added
