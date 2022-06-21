@@ -3,7 +3,7 @@
     "name": "lue-bird/elm-no-record-type-alias-constructor-function",
     "summary": "trick: no record `type alias` constructor function",
     "license": "MIT",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "exposed-modules": [
         "RecordWithoutConstructorFunction"
     ],
