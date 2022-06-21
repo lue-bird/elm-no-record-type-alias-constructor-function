@@ -1,4 +1,9 @@
-# changelog
+# change log
+
+#### 1.0.6
+
+  - section "verbose" details and other concepts added
+  - section "improve safety" added
 
 #### 1.0.5
 
