@@ -1,5 +1,9 @@
 # change log
 
+#### 1.0.8
+
+  - section "improve safety" examples corrected
+
 #### 1.0.7
 
   - section "verbose" format corrected

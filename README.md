@@ -376,15 +376,15 @@ Point : { x : Int } -> { y : Int } -> Point
 ## improve safety
 
 ```elm
-Codec.succeed (\x y -> { x = x, y = y })
+Codec.group (\{ x } { y } -> { x = x, y = y })
     |> Codec.part ( .x, \x -> { x = x })
         Codec.int
     |> Codec.part ( .y, \y -> { y = y })
         Codec.int
 ```
-or to always avoid shadowing errors:
+or better, to always avoid shadowing errors:
 ```elm
-Codec.succeed (\p0 p1 -> { x = .x p0, y = .y p1 })
+Codec.group (\p0 p1 -> { x = .x p0, y = .y p1 })
     |> Codec.part ( .x, \x -> { x = x })
         Codec.int
     |> Codec.part ( .y, \y -> { y = y })
@@ -394,7 +394,7 @@ Codec.succeed (\p0 p1 -> { x = .x p0, y = .y p1 })
 Making this less verbose with not-necessarily-language-sugared-but-[code-generable](https://dark.elm.dmy.fr/packages/lue-bird/elm-review-missing-record-field-lens/latest/) field stuff:
 
 ```elm
-Codec.succeed (\p0 p1 -> { x = .x p0, y = .y p1 })
+Codec.group (\p0 p1 -> { x = .x p0, y = .y p1 })
     |> Codec.part Record.x Codec.int
     |> Codec.part Record.y Codec.int
 ```
