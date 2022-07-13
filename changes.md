@@ -1,5 +1,9 @@
 # change log
 
+#### 1.0.9
+
+  - field addition syntax proposal improve
+
 #### 1.0.8
 
   - section "improve safety" examples corrected
