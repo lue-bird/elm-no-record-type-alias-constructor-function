@@ -301,14 +301,8 @@ There are languages that introduce extra sugar:
 
 ```elm
 succeed {}
-    |> andField "name" string (|+ .name)
-    |> andField "status" string (|+ .status)
-```
-or
-```elm
-succeed {}
-    |> andField "name" string (|, .name)
-    |> andField "status" string (|, .status)
+    |> field &name "name" string
+    |> field &status "status" string
 ```
 
 would be simple and neat. elm dropped this for simplicity.
