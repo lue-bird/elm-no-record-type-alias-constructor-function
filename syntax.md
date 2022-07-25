@@ -1,4 +1,4 @@
-### syntax for record and choice
+### syntax for record, choice, function
 
 ```elm
 Result value error =
@@ -22,6 +22,15 @@ Code code =
 countInitial : ( Count0 Int, Count1 Int )
 countInitial =
     ( Count0 0, Count1 0 )
+
+map :
+    (  (  element
+       -> elementMapped
+       )
+    -> (  (List element)
+       -> (List elementMapped)
+       )
+    )
 ```
 
 To discuss:
@@ -64,24 +73,16 @@ To discuss:
       - (subjective) not including `(...)` looks like multiple attached values
           - not an issue if variants are forbidden from having multiple arguments
       - (subjective) not including `(...)` is harder to parse visually
-
-### function type
-
-```elm
-map :
-    (  (  element
-       -> elementMapped
-       )
-    -> (  (List element)
-       -> (List elementMapped)
-       )
-    )
-```
-
-To discuss
   - force `->` to have 2 arguments?
       - makes currying extremely obvious and explicit
       - discourages reaching for undescriptive positional arguments too often
+  - force `( ... )`
+      - more consistent and obvious
+      - a sign there's more to look for below the first argument
+      - (subjective) _strong might_ look confusing as a result for example:
+        ```elm
+        countInitial : Count0 ( Ok Int | Err DeadEnd ), Count1 ( Ok Int | Err DeadEnd )
+        ```
 
 ### type declaration
 
