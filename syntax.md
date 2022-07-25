@@ -68,13 +68,16 @@ To discuss
         `&`/`||` might be understood as "and"
   - `fieldTag` → `FieldTag`
       - symmetrical to `VariantTag`
+      - allows reusing `.Tag` to access the value
       - distinct in types, less easy to mix up with variables
-      - forbids field punning pattern (points in earlier discussion)
+      - forbids field punning
+          - points in earlier discussion;
+            basically improves descriptiveness and scales better
   - `<Tag> : <constructor> <arguments>` vs `<Tag> (<constructor> <arguments>)` and
     `<field> = <constructor> <argument>` → `<field> (<constructor> <arguments>)`
       - `:` is more visually obvious, so `: (...)` isn't needed
       - `<Tag>` `:` (of type) `<value>`.
-        A tag, just like a variant tag isn't _of a type_, it has a type _attached_
+        A tag isn't _of a type_, it has a type _attached_
       - (subjective) not having a separator reads cleanly, `=`/`:` stop flow
       - (subjective) not including `(...)` looks like multiple attached values
           - not an issue if variants are forbidden from having multiple arguments
