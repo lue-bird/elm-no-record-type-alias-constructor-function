@@ -39,3 +39,5 @@ To discuss
       - function reads better alongside other transformations
       - `infix` can't be curried
       - all `infix`es are just symbols, `!<Name>` would be confusing
+      - → a function solves the problems well enough
+        to not need a more complex system around it
