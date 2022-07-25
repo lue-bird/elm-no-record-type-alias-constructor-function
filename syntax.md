@@ -33,7 +33,7 @@ map :
     )
 ```
 
-To discuss:
+To discuss
   - 1 value per tag, disallowing positional values
   - leading symbol per tag (variant `|`, field `.` vs `,` vs `&`)
     vs `open symbol ... symbol closed` like `( , , )`
@@ -53,8 +53,17 @@ To discuss:
             If we choose leading symbols,
             I'd be in favor if adding an extra `->` before functions as well
   - same vs different brackets for record and choice
-      - leading `|` makes it easy to differentiate
-        record from choice
+      - we don't have separate bracket symbols for functions as well
+      - different brackets makes it easy to differentiate record from choice
+      - different brackets means `< Tag value >  /=  { Tag value }`
+          - `<>` becomes the never type
+          - `{}` becomes the unit type
+      - same brackets make `()` invalid syntax
+          - ```elm
+            Blank = Blank
+            Never = OneMore Never
+            ```
+            have to be declared as separate types
   - `<ext> ||/& ( |/, )` vs `( <ext> |/, |/, )`
       - `,`/`|` is faster to type than `&`/`||`
       - `||`/`&` as extra symbols seem unnecessary
@@ -91,7 +100,7 @@ Translate mapped unmapped =
     In2Ways (unmapped -> mapped) (mapped -> unmapped)
 ```
 
-to discuss:
+To discuss
 - `type alias <type> =` → `<type>`
     - simple
     - less distinct from value, function declarations
@@ -127,7 +136,7 @@ model
   - declarative `succeed` showing the final shape
   - field value changes are drastically simpler and less verbose
 
-to discuss:
+To discuss
   - symbol `!` vs `/`
       - `!`, `/` look like "action"
       - `!` looks like `.` (field access) with something else on top
