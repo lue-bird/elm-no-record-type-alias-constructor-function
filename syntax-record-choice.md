@@ -24,10 +24,10 @@ countInitial =
     ( Count0 0, Count1 0 )
 ```
 
-to discuss:
+To discuss:
   - 1 value per tag, disallowing positional values
   - leading symbol per tag (variant `|`, field `.` vs `,` vs `&`)
-    vs `op(en sym,bol ... sym,bol clo)sed`
+    vs `open symbol ... symbol closed` like `( , , )`
       - not requiring leading `|` unifies 1-field records and 1-variant choices
           - allows reusing `.Tag` to access the value
           - adding another variant in another branch is easier
