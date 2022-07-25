@@ -42,7 +42,7 @@ To discuss:
           - similarly to function types, I don't think you have to,
             plus it's kinda obvious enough.
             If we choose leading symbols,
-            I'd be in favor if adding an extra `->`/`>` before functions as well
+            I'd be in favor if adding an extra `->` before functions as well
   - same vs different brackets for record and choice
       - leading `|` makes it easy to differentiate
         record from choice
@@ -64,6 +64,36 @@ To discuss:
       - (subjective) not including `(...)` looks like multiple attached values
           - not an issue if variants are forbidden from having multiple arguments
       - (subjective) not including `(...)` is harder to parse visually
+
+### function type
+
+```elm
+map :
+    (  (  element
+       -> elementMapped
+       )
+    -> (  (List element)
+       -> (List elementMapped)
+       )
+    )
+```
+
+To discuss
+  - force `->` to have 2 arguments?
+      - makes currying extremely obvious and explicit
+      - discourages reaching for undescriptive positional arguments too often
+
+### type declaration
+
+```elm
+Translate mapped unmapped =
+    In2Ways (unmapped -> mapped) (mapped -> unmapped)
+```
+
+to discuss:
+- `type alias <type> =` → `<type>`
+    - simple
+    - less distinct from value, function declarations
 
 ### field mapping
 
