@@ -35,29 +35,26 @@ map :
 
 To discuss
   - 1 value per tag, disallowing positional values
-  - leading symbol per tag (variant `|`, field `.` vs `,` vs `&`)
-    vs `open symbol ... symbol closed` like `( , , )`
-      - not requiring leading `|` unifies 1-field records and 1-variant choices
+  - leading symbol per tag (variant `|`, field `.` vs `,` vs `&`, function `->`)
+    vs `open symbol ... symbol closed` like `( , , )`/`( | | )`/`( -> -> )`
+      - not requiring a leading symbol unifies 1-field records and 1-variant choices
           - allows reusing `.Tag` to access the value
           - adding another variant in another branch is easier
       - (subjective)
         only leading symbol without open-closed looks confusing
         ```elm
-        | Ok Int | Err (List DeadEnd) -> | Ok Int | Err String
-        , Count0 Int , Count1 Int -> , Count0 Int , Count1 Int
+        -> | Ok Int | Err (List DeadEnd) -> | Ok Int | Err String
+        -> , Count0 Int , Count1 Int -> , Count0 Int , Count1 Int
         ```
-      - leading `|` makes it easy to differentiate
-        record from choice
-          - similarly to function types, I don't think you have to,
-            plus it's kinda obvious enough.
-            If we choose leading symbols,
-            I'd be in favor if adding an extra `->` before functions as well
+      - a unique leading symbol makes it easy to differentiate record, choice, function
+          - even without, it's probably obvious enough (see function types currently)
   - same vs different brackets for record and choice
       - we don't have separate bracket symbols for functions as well
       - different brackets makes it easy to differentiate record from choice
       - different brackets means `< Tag value >  /=  { Tag value }`
           - `<>` becomes the never type
           - `{}` becomes the unit type
+          - can't reuse .Tag to access the value
       - same brackets make `()` invalid syntax
           - ```elm
             Blank = Blank
