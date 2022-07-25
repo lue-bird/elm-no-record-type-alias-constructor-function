@@ -97,7 +97,11 @@ To discuss
 
 ```elm
 Translate mapped unmapped =
-    In2Ways (unmapped -> mapped) (mapped -> unmapped)
+    ( In2Ways
+        ( Map (unmapped -> mapped)
+        , Unmap (mapped -> unmapped)
+        )
+    )
 ```
 
 To discuss
