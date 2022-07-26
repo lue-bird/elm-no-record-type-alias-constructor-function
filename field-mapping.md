@@ -1,18 +1,28 @@
 ### field mapping
+Introducing syntax for changing one specific field value
 
 ```elm
-Blank =
-    Blank
-
-succeed ( Name Blank, Status Blank, Metadata metadataDefault )
-    |> field !Name "name" string
-    |> field !Status "status" string
-
 !Name :
     (value -> valueMapped)
     -> ( record, Name value )
     -> ( record, Name valueMapped )
+```
 
+which one previously had to write as
+
+```elm
+(\alter -> \record -> { record | name = record.name |> alter }) :
+    (value -> valueMapped)
+    -> ( record, Name value )
+    -> ( record, Name valueMapped )
+```
+
+  - verbose
+  - really hard to scale (nested lambdas, branching modifying different fields, indentation 🚀)
+  - possibly confusing for beginners (what does `|` mean? why are consecutive fields updated with `,`, nested updates look awful, ...)
+
+
+```elm
 model
     |> !PlayerPosition (!Y (\_ -> 0))
     |> !PlayerVelocity
@@ -23,6 +33,18 @@ model
                 |> !Y (\y -> y - 1)
         )
     |> checkForCollision
+```
+
+
+Apart from syntax, the proposed syntax also allows changing the field value's type
+
+```elm
+Blank =
+    Blank
+
+succeed ( Name Blank, Status Blank, Metadata metadataDefault )
+    |> field !Name "name" string
+    |> field !Status "status" string
 ```
 
   - simple
