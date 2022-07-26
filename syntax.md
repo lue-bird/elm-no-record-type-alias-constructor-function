@@ -98,8 +98,8 @@ To discuss
 ```elm
 Translate mapped unmapped =
     ( In2Ways
-        ( Map (unmapped -> mapped)
-        , Unmap (mapped -> unmapped)
+        ( Map ( unmapped -> mapped )
+        , Unmap ( mapped -> unmapped )
         )
     )
 ```
