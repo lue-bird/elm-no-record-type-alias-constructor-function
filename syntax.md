@@ -39,6 +39,7 @@ To discuss
     vs `open symbol ... symbol closed` like `( , , )`/`( | | )`/`( -> -> )`
       - not requiring a leading symbol unifies 1-field records and 1-variant choices
           - allows reusing `.Tag` to access the value
+            (and `!Tag` to map the value if it gets implemented)
           - adding another variant in another branch is easier
       - (subjective)
         only leading symbol without open-closed looks confusing
@@ -69,6 +70,7 @@ To discuss
   - `fieldTag` → `FieldTag`
       - symmetrical to `VariantTag`
       - allows reusing `.Tag` to access the value
+        (and `!Tag` to map the value if it gets implemented)
       - distinct in types, less easy to mix up with variables
       - forbids field punning
           - points in earlier discussion;

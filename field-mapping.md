@@ -63,3 +63,29 @@ To discuss
       - all `infix`es are just symbols, `!<Name>` would be confusing
       - → a function solves the problems well enough
         to not need a more complex system around it
+
+Small extra!
+If 1-field records and 1-variant choices unify:
+```elm
+Pet specificProperties =
+    ( specificProperties
+    , Name String
+    , Hunger Progress
+    )
+
+Cat =
+    ( Cat ( NapsPerDay Float ) )
+
+Dog =
+    ( Dog ( BarksPerDay Float ) )
+
+sit : ( Dog -> Dog )
+sit =
+    !Dog (!Hunger (Progress.by 0.01))
+
+howdy =
+    ( Cat ( Name "Howdy", Hunger Progress.begin, NapsPerDay 2.2 ) )
+
+howdy |> sit -- error
+```
+removing the intermediate need for boilerplate.
