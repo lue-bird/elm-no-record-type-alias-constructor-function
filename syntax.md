@@ -49,6 +49,7 @@ To discuss
         ```
       - a unique leading symbol makes it easy to differentiate record, choice, function
           - even without, it's probably obvious enough (see function types currently)
+      - `open symbol ... symbol closed` is already used for arrays
   - same vs different brackets for record and choice
       - we don't have separate bracket symbols for functions as well
       - different brackets makes it easy to differentiate record from choice
@@ -75,6 +76,8 @@ To discuss
       - forbids field punning
           - points in earlier discussion;
             basically improves descriptiveness and scales better
+      - having fields like `( Camera Camera, Mood Mood, Lighting Lighting, Rules Rules )`
+        _might_, even though it's unambiguous, be confusing: "which is the type, what's the type?"
   - `<Tag> : <constructor> <arguments>` vs `<Tag> (<constructor> <arguments>)` and
     `<field> = <constructor> <argument>` → `<field> (<constructor> <arguments>)`
       - `:` is more visually obvious, so `: (...)` isn't needed
@@ -94,6 +97,21 @@ To discuss
         ```elm
         countInitial : Count0 ( Ok Int | Err DeadEnd ), Count1 ( Ok Int | Err DeadEnd )
         ```
+      - forcing `( ... )` for patterns, constructors (1-field record, variant)
+        is pointless and complicates code since they aren't functions anymore:
+        ```elm
+        list |> List.map change |> InsideStructure |> List |> Structure
+        ```
+        becomes
+        ```elm
+        list
+            |> List.map change
+            |> (\mapped -> ( InsideStructure mapped ))
+            |> (\mapped -> ( List mapped ))
+            |> (\mapped -> ( Structure mapped ))
+        ```
+          - you could argue that constructors shouldn't be applied in pipeline style (I disagree)
+          - we could make an exception for these cases (variants and 1-field records)
 
 ### type declaration
 
