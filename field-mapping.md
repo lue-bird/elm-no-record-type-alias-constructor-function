@@ -3,18 +3,20 @@ Introducing syntax for changing one specific field value
 
 ```elm
 !Name :
-    (value -> valueMapped)
+    (  (value -> valueMapped)
     -> ( record, Name value )
     -> ( record, Name valueMapped )
+    )
 ```
 
 which one previously had to write as
 
 ```elm
 (\alter -> \record -> { record | name = record.name |> alter }) :
-    (value -> valueMapped)
+    (  (value -> valueMapped)
     -> ( record, Name value )
     -> ( record, Name valueMapped )
+    )
 ```
 
   - verbose
@@ -64,8 +66,10 @@ To discuss
       - → a function solves the problems well enough
         to not need a more complex system around it
 
-Small extra!
-If 1-field records and 1-variant choices unify:
+## extras
+
+### if 1-field records and 1-variant choices unify
+
 ```elm
 Pet specificProperties =
     ( specificProperties
@@ -89,3 +93,19 @@ howdy =
 howdy |> sit -- error
 ```
 removing the intermediate need for boilerplate.
+
+### field mapping composition
+
+```elm
+module Dog exposing (hungerAlter)
+
+Dog =
+    ( Dog ( BarksPerDay Float, Hunger Progress ) )
+
+hungerAlter : ( ( Progress -> Progress ) -> ( Dog -> Dog ) )
+hungerAlter =
+    !Dog << !Hunger
+```
+Above might be prone for abuse to over-nest your structures and rely on primitives too often.
+
+It might be best to add a few paragraphs on the dangers of the pattern.
