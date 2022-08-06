@@ -4,23 +4,19 @@ Introducing syntax for changing one specific field value
 ```elm
 !Name :
     (  (value -> valueMapped)
-    -> ( record, Name value )
-    -> ( record, Name valueMapped )
+    -> ( record, #Name value )
+    -> ( record, #Name valueMapped )
     )
 ```
 
 which one previously had to write as
 
 ```elm
-(\alter -> \record -> { record | name = record.name |> alter }) :
-    (  (value -> valueMapped)
-    -> ( record, Name value )
-    -> ( record, Name valueMapped )
-    )
+(\alter -> \record -> { record | name = record.name |> alter })
 ```
 
   - verbose
-  - really hard to scale (nested lambdas, branching modifying different fields, indentation 🚀)
+  - really hard to scale (nested lambdas, branching altering different fields, indentation 🚀)
   - possibly confusing for beginners (what does `|` mean? why are consecutive fields updated with `,`, nested updates look awful, ...)
 
 
@@ -30,9 +26,9 @@ model
     |> !PlayerVelocity
         (\velocity ->
             velocity
-                |> !X (\x -> x * 0.95)
-                |> !Y (\y -> y * 0.95)
-                |> !Y (\y -> y - 1)
+                |> !X (\* 0.95)
+                |> !Y (\* 0.95)
+                |> !Y (\- 1)
         )
     |> checkForCollision
 ```
@@ -42,9 +38,9 @@ Apart from syntax, the proposed syntax also allows changing the field value's ty
 
 ```elm
 Blank =
-    Blank
+    #Blank
 
-succeed ( Name Blank, Status Blank, Metadata metadataDefault )
+succeed ( #Name ( #Blank ), #Status ( #Blank ), #Metadata metadataDefault )
     |> field !Name "name" string
     |> field !Status "status" string
 ```
@@ -73,22 +69,22 @@ To discuss
 ```elm
 Pet specificProperties =
     ( specificProperties
-    , Name String
-    , Hunger Progress
+    , #Name String
+    , #Hunger Progress
     )
 
 Cat =
-    ( Cat ( NapsPerDay Float ) )
+    ( #Cat ( #NapsPerDay Float ) )
 
 Dog =
-    ( Dog ( BarksPerDay Float ) )
+    ( #Dog ( #BarksPerDay Float ) )
 
 sit : ( Dog -> Dog )
 sit =
     !Dog (!Hunger (Progress.by 0.01))
 
 howdy =
-    ( Cat ( Name "Howdy", Hunger Progress.begin, NapsPerDay 2.2 ) )
+    ( #Cat ( #Name "Howdy", #Hunger Progress.begin, #NapsPerDay 2.2 ) )
 
 howdy |> sit -- error
 ```
@@ -100,7 +96,7 @@ removing the intermediate need for boilerplate.
 module Dog exposing (hungerAlter)
 
 Dog =
-    ( Dog ( BarksPerDay Float, Hunger Progress ) )
+    ( #Dog ( #BarksPerDay Float, #Hunger Progress ) )
 
 hungerAlter : ( ( Progress -> Progress ) -> ( Dog -> Dog ) )
 hungerAlter =
