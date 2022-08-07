@@ -2,9 +2,8 @@
 
 ```elm
 Result value error =
-    ( #Failure error
+    | #Failure error
     | #Success value
-    )
 
 case result of
     #Failure error ->
@@ -14,127 +13,182 @@ case result of
         value
 
 Code code =
-    ( code
+    , code
     , #Imports Imports
     , #Range (Range2d Int)
-    )
 
-countInitial : ( #Count0 Int, #Count1 Int )
+countInitial : , #Count0 Int, #Count1 Int
 countInitial =
-    ( #Count0 0, #Count1 0 )
+    , #Count0 0, #Count1 0
 
 map :
-    (  (  element
-       -> elementMapped
+    -> (-> element
+        -> elementMapped
        )
-    -> (  (List element)
-       -> (List elementMapped)
+    -> (-> List element
+        -> List elementMapped
        )
-    )
 ```
 
 To discuss
   - 1 value per tag, disallowing positional values
-  - leading symbol per tag: different for variant `|`, field `,`/`&` in `(  )`
-    vs just one symbol `#`/`-`/`'` in `( | | )` and `( , , )`
-    vs just one symbol `#`/`-`/`'` in `< | | >` and `{ , , }`
-      - one symbol in `( | | )` and `( , , )` unifies 1-field record and 1-variant choice
-          - allows reusing `.Tag` to access the value
+  - tag leading symbol
+      - 🆚 `#`
+      - 🆚 `-`
+      - There needs to be a common syntax for 1-variant choice, 1-field record expressions, patterns, types: `#/-OneVariant _`.
+          - `gren-format` will remove potential unique brackets or separators around single tagged values
+          - the tag-value representation can then be used to both extend a union or a record
+          - common syntax for field/variant tagging/accessing/mapping
+        
+        Since, as argued above, this is the case, it would be confusing not to require a leading symbol for all tags
+      - `-` _might_ be interpreted as "subtract" or "private"
+  - combining multiple arguments
+      - 1-field records, 1-variant choices, only-result functions shouldn't be differentiated
+        so their respective syntax shouldn't allow just one argument
+      - 🆚 leading symbol per argument: different for variant `|`, field `,` in `(  )`
+      - 🆚 ` | | `, ` , , `, ` -> -> `
+          - 🆚 forced `( ... )`
+          - 🆚 redundant `( ... )`s being removed)
+      - 🆚 `< | | >`, `{ , , }` (and `[ -> -> ]` or some other brackets for functions, with `[]` being invalid syntax)
+      - one symbol in ` | | `, ` , , `
+        syntactically unifies 1-field record and 1-variant choice
+        without further effort
+          - allows `.Tag` to access the value
             (and `!Tag` to map the value if it gets implemented)
           - adding another variant in another branch is easier
-      - different brackets or leading symbols means `< #tag value >  /=  { #tag value }`
-          - `<>` becomes the never type
-          - `{}` becomes the unit type
-          - can't reuse .Tag to access the value
-            (nor `!Tag` to map the value if it gets implemented)
-      - (subjective)
-        only leading symbol without brackets looks confusing
-        ```elm
-        -> | Ok Int | Err (List DeadEnd) -> | Ok Int | Err String
-        -> , Count0 Int , Count1 Int -> , Count0 Int , Count1 Int
-        ```
+      - unique brackets plus unique brackets require more extra symbols
+        but don't provide more utility than just using different leading separators
+      - different brackets means intuitive `<>` = Never, `{}` = Unit
       - unique brackets or leading symbols makes it easy to differentiate record, choice
           - even without, it's probably obvious enough (see function types currently)
       - unique brackets enable `{}` as unit, `<>` as never without separate types
       - same brackets make `{}`/`<>` invalid syntax
           - ```elm
-            Blank = #Blank
-            Impossible = #Still Impossible
-
-            -- magically: blank = empty record, Impossible = empty choice
+            Blank = #Blank -- magically unifies as empty record
             Name = Named Blank
+
+            Impossible = #Still Impossible
             Weekday = WeekdayAnd Impossible
+
+            case weekday of
+                #Monday -> #Monday
+                ...
+                #Still still ->
+                    still |> impossible
             ```
             have to be declared as separate types
-  - `<ext> ||/& ( |/, )` vs `( <ext> |/, |/, )`
+      - one symbol in ` | | `, ` , , `, ` -> -> ` in `( ... )`?
+          - 🆚 forcing `( ... )`
+          - 🆚 `gren-format`ting away redundant `( ... )`
+
+        `( ... )` will not be forced on patterns and constructors of 1-field records, variants
+          - always requiring `( ... )` is more consistent and obvious:
+            ```elm
+            Ok Int | Err (List DeadEnd) -> Ok Int | Err String
+            Count0 Int, Count1 Int -> Count0 Int, Count1 Int
+            ```
+            compared to
+            ```elm
+            ( ( Ok Int | Err (List DeadEnd) ) -> ( Ok Int | Err String ) )
+            ( ( Count0 Int, Count1 Int ) -> ( Count0 Int, Count1 Int ) )
+            ```
+            telling you there's more to look out for later below the first argument
+  - extension
+      - 🆚 for leading symbols
+          - 🆚 `|| <ext> | `/`,, <ext> ,`
+          - 🆚 `| <ext> | `/`, <ext> , `
+      - 🆚 for separators
+          - 🆚 `<ext> || | `/`,, <ext> ,`
+          - 🆚 `<ext> | | `/`<ext> , , `
       - `,`/`|` is faster to type than `&`/`||`
       - `||`/`&` as extra symbols seem unnecessary
-      - `,`/`|` might be understood as "another single element"
-        `&`/`||` might be understood as "and"
-  - `#tag` vs `#Tag`
-      - symmetrical to `VariantTag`
-      - allows reusing `.Tag` to access the value
-        (and `!Tag` to map the value if it gets implemented)
-      - `#Tag` looks distinct in types, less easy to mix up with variables
+      - `,`/`|` might be understood as "next, another single element"
+        while `&`/`||` might be understood as "and" extend with
+  - `<tag>` casing
+      - 🆚 `tag`
+      - 🆚 `#Tag`
+      - most languages lowercase field names
+      - `#Tag` looks distinct in types, expressions, patterns, less easy to mix up with variables
       - `#Tag` forbids field punning
           - points in earlier discussion;
             basically improves descriptiveness and scales better
       - having fields like `( #Camera Camera, #Mood Mood, #Lighting Lighting, #Rules Rules )`
         _might_, even though it's unambiguous, be confusing: "which is the type, what's the type?"
       - `#tag` is easier and faster to type
-          - gren-format could auto-uppercase the tags
-  - `<Tag> : <constructor> <arguments>` vs leading symbol + `<Tag> (<constructor> <arguments>)` and
-    `<field> = <constructor> <argument>` → `<field> (<constructor> <arguments>)`
-      - `:` is more visually obvious, so `: (...)` isn't needed
-      - `<Tag>` `:` (of type) `<value>`.
+          - `gren-format` could auto-uppercase the tags
+  - separator between tag and value
+      - 🆚 `<tag leading symbol><tag> =/: <construct> <arguments>`
+      - 🆚 `<tag leading symbol><tag> (<construct> <arguments>)`
+      - `:` requires less `(...)`
+      - `<tag>` `:` (of type) `<value>`:
         A tag isn't _of a type_, it has a type _attached_
-      - (subjective) not having a separator reads cleanly, `=`/`:` stop flow
-      - (subjective) not including `(...)` looks like multiple attached values
-          - not an issue if variants are forbidden from having multiple arguments
-      - (subjective) not including `(...)` is harder to parse visually
+      - _subjective_ not having a separator reads cleanly, `=`/`:` stop flow
+      - _subjective_ not including `(...)` _might_ look like multiple attached values
+      - _subjective_ not including `(...)` is harder to parse visually TODO
   - force `->` to have 2 arguments?
       - makes currying extremely obvious and explicit
       - discourages reaching for undescriptive positional arguments too often
-  - forcing `( ... )` vs gren-formatting away unnecessary `( ... )`
-      - forcing `( ... )` is more consistent and obvious
-      - (subjective)
-        not forcing `( ... )` _might_ look weird: "Which level deep is the tag, what's the value?"
-        ```elm
-        ( #Name #Blank, #Status #Blank )
-        ```
-      - a sign there's more to look for below the first argument
-      - (subjective) _strong might_ look confusing as a result for example:
-        ```elm
-        countInitial : Count0 ( Ok Int | Err DeadEnd ), Count1 ( Ok Int | Err DeadEnd )
-        ```
-      - forcing `( ... )` for patterns, constructors (1-field record, variant)
-        is pointless and complicates code since they aren't functions anymore:
-        ```elm
-        list |> List.map change |> InsideStructure |> List |> Structure
-        ```
-        becomes
-        ```elm
-        list
-            |> List.map change
-            |> (\mapped -> ( #InsideStructure mapped ))
-            |> (\mapped -> ( #List mapped ))
-            |> (\mapped -> ( #Structure mapped ))
-        ```
-          - you could argue that constructors shouldn't be applied in pipeline style (I disagree)
-          - we could exclude forcing `( ... )` for variants and 1-field records
+      - forcing some `(  )`s in types isn't in line with expressions
+        where redundant parens are removed
 
 ### type declaration
 
 ```elm
 Translate mapped unmapped =
-    ( #bothWays
-        ( Map ( unmapped -> mapped )
-        , Unmap ( mapped -> unmapped )
+    #BothWays
+        (, #Map (-> unmapped -> mapped)
+         , #Unmap (-> mapped -> unmapped)
         )
-    )
+
+Password =
+    internal#Password String
 ```
 
 To discuss
-- `type alias <type> =` vs `<type>`
-    - simple
-    - less distinct from value, function declarations
+  - `type alias <type> =` 🆚 `<type>`
+      - simple
+      - less distinct from value, function declarations
+  - if ` | | `, ` , , `, ` -> -> ` parens are optional
+      - 🆚
+        ```elm
+        AOrB arguments
+            = #A
+            | #B
+        
+        aToB
+            :  #A
+            -> #B
+        
+        aAndB
+            : #A
+            , #B
+        ```
+      - 🆚
+        ```elm
+        AOrB arguments =
+              #A
+            | #B
+        
+        aToB :
+              #A
+            -> #B
+        
+        aAndB :
+              #A
+            , #B
+        ```
+      - `=`/`:` on the same line is more in line with all other type/value declarations
+  - if opaque types will still be available
+      - 🆚
+        ```elm
+        Password =
+            internal#Password String
+        ```
+      - 🆚
+        ```elm
+        internal Password =
+            #Password String
+    ```
+    with the `<opaque keyword>` `opaque`/`internal`/`module-internal`/?.
+    Extraction and creation via `<opaque keyword><tag leading symbol><tag>` will then only be allowed in the same `module`
+      - `<type> <arguments> = <opaque keyword>` shows that it's _implementation is hidden, not it's type_

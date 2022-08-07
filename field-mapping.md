@@ -3,10 +3,9 @@ Introducing syntax for changing one specific field value
 
 ```elm
 !Name :
-    (  (value -> valueMapped)
-    -> ( record, #Name value )
-    -> ( record, #Name valueMapped )
-    )
+    -> (-> value -> valueMapped)
+    -> , record, #Name value
+    -> , record, #Name valueMapped
 ```
 
 which one previously had to write as
@@ -37,10 +36,11 @@ model
 Apart from syntax, the proposed syntax also allows changing the field value's type
 
 ```elm
+--  or ()
 Blank =
     #Blank
 
-succeed ( #Name ( #Blank ), #Status ( #Blank ), #Metadata metadataDefault )
+succeed (, #Name #Blank, #Status #Blank, #Metadata metadataDefault)
     |> field !Name "name" string
     |> field !Status "status" string
 ```
@@ -50,11 +50,15 @@ succeed ( #Name ( #Blank ), #Status ( #Blank ), #Metadata metadataDefault )
   - field value changes are drastically simpler and less verbose
 
 To discuss
-  - symbol `!` vs `/`
+  - symbol
+      - 🆚 `!`
+      - 🆚 `/`
       - `!`, `/` look like "action"
       - `!` looks like `.` (field access) with something else on top
-      - (subjective) `/` is hard and confusing to read with lambdas
-  - function vs `infix`
+      - _subjective_ `/` is hard and confusing to read with lambdas
+  - representation
+      - 🆚 function
+      - 🆚 `infix`
       - `infix` is slightly more compact
       - function reads better alongside other transformations
       - `infix` can't be curried
@@ -68,23 +72,22 @@ To discuss
 
 ```elm
 Pet specificProperties =
-    ( specificProperties
+    , specificProperties
     , #Name String
     , #Hunger Progress
-    )
 
 Cat =
-    ( #Cat ( #NapsPerDay Float ) )
+    #Cat (#NapsPerDay Float)
 
 Dog =
-    ( #Dog ( #BarksPerDay Float ) )
+    #Dog (#BarksPerDay Float)
 
-sit : ( Dog -> Dog )
+sit : -> Dog -> Dog
 sit =
     !Dog (!Hunger (Progress.by 0.01))
 
 howdy =
-    ( #Cat ( #Name "Howdy", #Hunger Progress.begin, #NapsPerDay 2.2 ) )
+    #Cat (, #Name "Howdy", #Hunger Progress.begin, #NapsPerDay 2.2)
 
 howdy |> sit -- error
 ```
@@ -96,9 +99,9 @@ removing the intermediate need for boilerplate.
 module Dog exposing (hungerAlter)
 
 Dog =
-    ( #Dog ( #BarksPerDay Float, #Hunger Progress ) )
+    #Dog (, #BarksPerDay Float, #Hunger Progress)
 
-hungerAlter : ( ( Progress -> Progress ) -> ( Dog -> Dog ) )
+hungerAlter : -> (Progress -> Progress) -> (Dog -> Dog)
 hungerAlter =
     !Dog << !Hunger
 ```
